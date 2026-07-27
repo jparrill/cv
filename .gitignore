@@ -1,0 +1,8 @@
+# Outputs
+output/
+
+# Go
+vendor/
+
+# OS
+.DS_Store

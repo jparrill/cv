@@ -1,0 +1,99 @@
+# CV — Juan Manuel Parrilla Madrid
+# Fuente de verdad. Edita aquí y renderiza con `make html` / `make pdf`.
+
+profile:
+  name: "Juan Manuel Parrilla Madrid"
+  headline: "Software Engineer at Red Hat — OpenShift Hosted Control Planes"
+  location: "Madrid, España"
+  email: "juanmanuel.parrilla@gmail.com"
+  github: "https://github.com/jparrill"
+  linkedin: "https://www.linkedin.com/in/jparrill"
+  about: |
+    Software Engineer especializado en cloud-native, Kubernetes y infraestructura
+    distribuida. Apasionado por la automatización, la observabilidad y los sistemas
+    resilientes. Actualmente trabajando en OpenShift Hosted Control Planes (HyperShift)
+    en Red Hat.
+
+experience:
+  - company: "Red Hat"
+    location: "Madrid, España"
+    title: "Software Engineer"
+    start: "2024"
+    end: ""
+    current: true
+    description: |
+      OpenShift Hosted Control Planes (HyperShift) — Multi-tenant Kubernetes as a Service
+      • Componentes: control-plane-operator, hosted-cluster-config-operator, hypershift-operator
+      • PR reviews, release process, backup/restore/migration, CI/E2E, CVE patching
+      • Jira: OCPBUGS, CNTRLPLANE
+
+  - company: "..."
+    title: "..."
+    start: "..."
+    end: "..."
+    description: |
+      [Completa con tu experiencia anterior]
+
+education:
+  - institution: "AZPE S.L."
+    start: "2010"
+    end: "2010"
+    degree: "Cisco Certified Network Associate (CCNA) curriculum"
+
+certifications:
+  - name: "RHCE — Red Hat Certified Engineer (EX300)"
+    date: "2016-01"
+  - name: "RHCSA — Red Hat Certified System Administrator (EX200)"
+    date: "2015-01"
+  - name: "LFCE — Linux Foundation Certified Engineer"
+    date: "2015-12"
+  - name: "LFCS — Linux Foundation Certified System Administrator"
+    date: "2016-02"
+  - name: "RHOSP — Red Hat OpenStack Administration (EX210)"
+    date: "2016-03"
+  - name: "Red Hat Certification on Configuration Management with Puppet (EX405)"
+    date: "2016-10"
+  - name: "LFD420 — Linux Kernel Internals and Development"
+    date: "2019-10"
+  - name: "MCDST — Microsoft Certified Desktop Support Technician"
+    date: "2010-05"
+  - name: "CCNA — Cisco Certified Network Associate"
+    date: "2011-05"
+
+skills:
+  - category: "Lenguajes"
+    items:
+      - Go
+      - Python
+      - Bash
+  - category: "Infraestructura"
+    items:
+      - Kubernetes
+      - OpenShift
+      - Linux (RHEL, Fedora)
+      - Docker/Containers
+      - Terraform
+  - category: "Cloud"
+    items:
+      - AWS
+      - GCP
+      - Azure
+  - category: "Herramientas"
+    items:
+      - Git
+      - CI/CD (GitHub Actions, OpenShift Pipelines)
+      - Prometheus/Grafana
+      - Ansible
+
+languages:
+  - name: "Spanish"
+    level: "Nativo"
+  - name: "English"
+    level: "Professional working proficiency"
+
+volunteering:
+  - role: "Runner"
+    organization: "Telefónica and Mia"
+    start: "2014"
+    end: "present"
+    description: "Running volunteer activities"

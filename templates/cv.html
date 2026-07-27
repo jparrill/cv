@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ .Profile.Name }} — CV</title>
+  <style>
+    :root {
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+      --color-text: #1a1a2e;
+      --color-muted: #6b7280;
+      --color-accent: #2563eb;
+      --color-sidebar-bg: #f8fafc;
+      --color-border: #e2e8f0;
+      --max-width: 900px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-main);
+      color: var(--color-text);
+      line-height: 1.6;
+      background: #ffffff;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    /* Header */
+    .header {
+      border-bottom: 3px solid var(--color-accent);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--color-text);
+    }
+
+    .header .headline {
+      font-size: 1.1rem;
+      color: var(--color-accent);
+      font-weight: 500;
+      margin-top: 0.25rem;
+    }
+
+    .contact {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 0.75rem;
+      font-size: 0.875rem;
+      color: var(--color-muted);
+    }
+
+    .contact a {
+      color: var(--color-accent);
+      text-decoration: none;
+    }
+
+    .contact a:hover { text-decoration: underline; }
+
+    /* About */
+    .about {
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+      color: var(--color-muted);
+      line-height: 1.7;
+    }
+
+    /* Layout: two columns */
+    .main { display: flex; gap: 2.5rem; }
+    .content { flex: 1; min-width: 0; }
+    .sidebar { width: 240px; flex-shrink: 0; }
+
+    /* Sections */
+    .section { margin-bottom: 2rem; }
+    .section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-accent);
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Experience */
+    .exp-item { margin-bottom: 1.5rem; }
+    .exp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+    .exp-title { font-weight: 600; font-size: 1rem; }
+    .exp-company { color: var(--color-accent); font-weight: 500; }
+    .exp-dates { font-size: 0.8rem; color: var(--color-muted); white-space: nowrap; }
+    .exp-location { font-size: 0.85rem; color: var(--color-muted); margin-bottom: 0.3rem; }
+    .exp-desc { font-size: 0.9rem; color: var(--color-text); margin-top: 0.3rem; white-space: pre-line; }
+
+    /* Certifications */
+    .cert-item {
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+    }
+    .cert-item .cert-name { font-weight: 500; }
+    .cert-item .cert-date { color: var(--color-muted); font-size: 0.8rem; }
+
+    /* Skills */
+    .skill-category { margin-bottom: 1rem; }
+    .skill-category-name {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-muted);
+      margin-bottom: 0.25rem;
+    }
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .skill-tag {
+      background: var(--color-sidebar-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.8rem;
+      color: var(--color-text);
+    }
+
+    /* Languages */
+    .lang-item {
+      font-size: 0.85rem;
+      margin-bottom: 0.3rem;
+    }
+    .lang-level { color: var(--color-muted); font-size: 0.8rem; }
+
+    /* Volunteering */
+    .vol-item { font-size: 0.85rem; }
+    .vol-role { font-weight: 500; }
+    .vol-org { color: var(--color-muted); }
+    .vol-dates { font-size: 0.8rem; color: var(--color-muted); }
+
+    /* Print styles */
+    @media print {
+      body { padding: 0; }
+      .contact a { color: var(--color-text); }
+      a[href]::after { content: none; }
+    }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      .main { flex-direction: column; }
+      .sidebar { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>{{ .Profile.Name }}</h1>
+    <div class="headline">{{ .Profile.Headline }}</div>
+    <div class="contact">
+      {{ if .Profile.Location }}<span>{{ .Profile.Location }}</span>{{ end }}
+      {{ if .Profile.Email }}<span>✉ <a href="mailto:{{ .Profile.Email }}">{{ .Profile.Email }}</a></span>{{ end }}
+      {{ if .Profile.Github }}<span>⌨ <a href="{{ .Profile.Github }}">{{ .Profile.Github }}</a></span>{{ end }}
+      {{ if .Profile.Linkedin }}<span>🔗 <a href="{{ .Profile.Linkedin }}">{{ .Profile.Linkedin }}</a></span>{{ end }}
+    </div>
+  </header>
+
+  {{ if .Profile.About }}
+  <section class="about">
+    {{ .Profile.About }}
+  </section>
+  {{ end }}
+
+  <div class="main">
+    <div class="content">
+      {{ if .Experience }}
+      <section class="section">
+        <h2 class="section-title">Experience</h2>
+        {{ range .Experience }}
+        <div class="exp-item">
+          <div class="exp-header">
+            <div>
+              <span class="exp-title">{{ .Title }}</span>
+              <span class="exp-company"> @ {{ .Company }}</span>
+            </div>
+            <span class="exp-dates">{{ .Start }}{{ if and .End (not .Current) }} — {{ .End }}{{ end }}{{ if .Current }} — present{{ end }}</span>
+          </div>
+          {{ if .Location }}<div class="exp-location">{{ .Location }}</div>{{ end }}
+          {{ if .Description }}<div class="exp-desc">{{ .Description }}</div>{{ end }}
+        </div>
+        {{ end }}
+      </section>
+      {{ end }}
+
+      {{ if .Education }}
+      <section class="section">
+        <h2 class="section-title">Education</h2>
+        {{ range .Education }}
+        <div class="exp-item">
+          <div class="exp-header">
+            <span class="exp-title">{{ .Institution }}</span>
+            <span class="exp-dates">{{ .Start }}{{ if .End }} — {{ .End }}{{ end }}</span>
+          </div>
+          {{ if .Degree }}<div class="exp-desc" style="font-size:0.9rem;">{{ .Degree }}</div>{{ end }}
+        </div>
+        {{ end }}
+      </section>
+      {{ end }}
+    </div>
+
+    <aside class="sidebar">
+      {{ if .Certifications }}
+      <section class="section">
+        <h2 class="section-title">Certifications</h2>
+        {{ range .Certifications }}
+        <div class="cert-item">
+          <div class="cert-name">{{ .Name }}</div>
+          {{ if .Date }}<div class="cert-date">{{ .Date }}</div>{{ end }}
+        </div>
+        {{ end }}
+      </section>
+      {{ end }}
+
+      {{ if .Skills }}
+      <section class="section">
+        <h2 class="section-title">Skills</h2>
+        {{ range .Skills }}
+        <div class="skill-category">
+          <div class="skill-category-name">{{ .Category }}</div>
+          <div class="skill-tags">
+            {{ range .Items }}<span class="skill-tag">{{ . }}</span>{{ end }}
+          </div>
+        </div>
+        {{ end }}
+      </section>
+      {{ end }}
+
+      {{ if .Languages }}
+      <section class="section">
+        <h2 class="section-title">Languages</h2>
+        {{ range .Languages }}
+        <div class="lang-item">
+          <span class="lang-level">{{ .Name }}</span>
+          <span class="lang-level"> — {{ .Level }}</span>
+        </div>
+        {{ end }}
+      </section>
+      {{ end }}
+
+      {{ if .Volunteering }}
+      <section class="section">
+        <h2 class="section-title">Volunteering</h2>
+        {{ range .Volunteering }}
+        <div class="vol-item">
+          <div class="vol-role">{{ .Role }}</div>
+          <div class="vol-org">{{ .Organization }} · {{ .Start }}–{{ .End }}</div>
+          {{ if .Description }}<div style="font-size:0.8rem;color:var(--color-muted);margin-top:0.2rem;">{{ .Description }}</div>{{ end }}
+        </div>
+        {{ end }}
+      </section>
+      {{ end }}
+    </aside>
+  </div>
+</body>
+</html>
