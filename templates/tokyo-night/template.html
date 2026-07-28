@@ -319,32 +319,93 @@
       color: var(--text-comment);
     }
 
+    /* --- Download button --- */
+    .download-btn {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--blue);
+      color: var(--bg-deep);
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.2rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      z-index: 10;
+    }
+
+    .download-btn:hover { background: var(--cyan); }
+
     /* --- Print --- */
+    @page { size: A4; margin: 0; }
+
     @media print {
-      body { background: #fff; color: #111; font-size: 11px; }
-      .layout { flex-direction: column; max-width: none; }
-      .sidebar {
-        width: 100%;
-        background: #f8f9fa;
-        border-right: none;
-        border-bottom: 2px solid #111;
-        padding: 1rem;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
+      .download-btn { display: none; }
+
+      body { font-size: 13px; }
+
+      .layout {
+        flex-direction: row;
+        max-width: none;
+        min-height: auto;
       }
-      .avatar { display: none; }
-      .sidebar-name { font-size: 1.2rem; }
-      .sidebar-section { margin-bottom: 0.5rem; flex: 1 1 200px; }
-      .content { padding: 1rem; }
-      .exp-item { border-left-color: #ccc; }
-      .exp-item:hover { border-left-color: #ccc; }
-      .content-title { color: #333; }
-      .sidebar-title { color: #666; }
-      .skill-tag { background: #eee; border-color: #ddd; color: #333; }
-      .exp-company { color: #c65d07; }
-      .exp-desc p { color: #555; }
-      a { color: #333; }
+
+      .sidebar {
+        width: 220px;
+        padding: 1.2rem 1rem;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .avatar { width: 50px; height: 50px; font-size: 1.2rem; margin-bottom: 0.6rem; }
+      .sidebar-name { font-size: 0.9rem; }
+      .sidebar-headline { font-size: 0.7rem; margin-bottom: 0.8rem; }
+      .sidebar-section { margin-bottom: 0.8rem; }
+      .sidebar-title { font-size: 0.6rem; margin-bottom: 0.35rem; }
+      .skill-cat-name { font-size: 0.6rem; }
+      .skill-tag { font-size: 0.6rem; padding: 0.05rem 0.3rem; }
+      .skill-category { margin-bottom: 0.4rem; }
+      .cert-name { font-size: 0.65rem; }
+      .cert-meta { font-size: 0.6rem; }
+      .contact-item { font-size: 0.68rem; }
+      .lang-item { font-size: 0.68rem; }
+
+      .content {
+        flex: 1;
+        padding: 1.2rem 1.2rem;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .content-title { font-size: 0.65rem; margin-bottom: 0.4rem; }
+      .about-text { font-size: 0.75rem; line-height: 1.5; }
+
+      .exp-item {
+        margin-bottom: 0.7rem;
+        padding-left: 0.6rem;
+        break-inside: avoid;
+      }
+      .exp-item:hover { border-left-color: var(--border); }
+      .exp-title { font-size: 0.8rem; }
+      .exp-company { font-size: 0.8rem; }
+      .exp-dates { font-size: 0.6rem; }
+      .exp-location { font-size: 0.65rem; }
+      .exp-desc { font-size: 0.72rem; }
+      .exp-desc p { font-size: 0.7rem; }
+      .exp-desc li { margin-bottom: 0.05rem; }
+
+      .edu-item { break-inside: avoid; }
+      .edu-inst { font-size: 0.75rem; }
+      .edu-dates { font-size: 0.6rem; }
+      .edu-degree { font-size: 0.68rem; }
+
+      .pub-item { font-size: 0.72rem; }
+      .pub-meta { font-size: 0.62rem; }
+
+      .content-section { margin-bottom: 1rem; }
     }
 
     /* --- Responsive --- */
@@ -367,6 +428,7 @@
   </script>
 </head>
 <body>
+  <button class="download-btn" onclick="window.print()">⬇ Download PDF</button>
   <div class="layout">
     <aside class="sidebar">
       <div class="avatar">JM</div>

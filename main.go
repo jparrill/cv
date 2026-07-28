@@ -2,14 +2,19 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"embed"
 	"flag"
 	"fmt"
 	"html/template"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
+	"github.com/chromedp/cdproto/page"
+	"github.com/chromedp/chromedp"
 	"gopkg.in/yaml.v3"
 )
 
@@ -144,6 +149,7 @@ func main() {
 	templateName := flag.String("template", "ats-clean", "template name (directory under templates/)")
 	dataFile := flag.String("data", "data.yaml", "path to YAML data file")
 	outputDir := flag.String("output", "output", "output directory")
+	pdfFlag := flag.Bool("pdf", false, "also generate PDF via headless Chrome")
 	flag.Parse()
 
 	if env := os.Getenv("TEMPLATE"); env != "" && *templateName == "ats-clean" {
@@ -194,6 +200,52 @@ func main() {
 	}
 
 	fmt.Printf("Rendered %s template to %s\n", *templateName, outPath)
+
+	if *pdfFlag {
+		pdfPath := filepath.Join(*outputDir, "cv.pdf")
+		absHTML, _ := filepath.Abs(outPath)
+		fileURL := "file://" + url.PathEscape(absHTML)
+		// PathEscape encodes too aggressively for file paths; use raw path
+		fileURL = "file://" + absHTML
+
+		if err := htmlToPDF(fileURL, pdfPath); err != nil {
+			fmt.Fprintf(os.Stderr, "Error generating PDF: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Generated PDF at %s\n", pdfPath)
+	}
+}
+
+func htmlToPDF(fileURL, outPath string) error {
+	ctx, cancel := chromedp.NewContext(context.Background())
+	defer cancel()
+
+	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+
+	var buf []byte
+	if err := chromedp.Run(ctx,
+		chromedp.Navigate(fileURL),
+		chromedp.WaitReady("body"),
+		chromedp.ActionFunc(func(ctx context.Context) error {
+			var err error
+			buf, _, err = page.PrintToPDF().
+				WithPaperWidth(8.27).   // A4
+				WithPaperHeight(11.69). // A4
+				WithMarginTop(0.3).
+				WithMarginBottom(0.3).
+				WithMarginLeft(0.2).
+				WithMarginRight(0.2).
+				WithScale(1.0).
+				WithPrintBackground(true).
+				Do(ctx)
+			return err
+		}),
+	); err != nil {
+		return err
+	}
+
+	return os.WriteFile(outPath, buf, 0644)
 }
 
 func listTemplates() []string {

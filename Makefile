@@ -6,8 +6,8 @@ OUTPUT   ?= output
 build:
 	go run main.go --template $(TEMPLATE) --output $(OUTPUT)
 
-pdf: build
-	@echo "PDF generation not yet implemented (chromedp coming soon)"
+pdf:
+	go run main.go --template $(TEMPLATE) --output $(OUTPUT) --pdf
 
 push: build
 	git add -A
