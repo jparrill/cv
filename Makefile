@@ -8,7 +8,7 @@ build:
 
 push: build
 	git add -A
-	git commit -s -m "Update CV"
+	git diff --cached --quiet || git commit -s -m "Update CV"
 	git push origin main
 
 clean:
