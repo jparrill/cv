@@ -1,4 +1,4 @@
-TEMPLATE ?= ats-clean
+TEMPLATE ?= tokyo-night
 OUTPUT   ?= output
 
 .PHONY: build html pdf clean list-templates
