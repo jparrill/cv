@@ -2,23 +2,29 @@ package main
 
 import (
 	"bytes"
+	"embed"
+	"flag"
 	"fmt"
+	"html/template"
 	"os"
 	"path/filepath"
-	"text/template"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
 
-// Data is the top-level YAML structure.
+//go:embed templates
+var templatesFS embed.FS
+
 type Data struct {
-	Profile      Profile      `yaml:"profile"`
-	Experience   []Experience `yaml:"experience"`
-	Education    []Education  `yaml:"education"`
+	Profile        Profile        `yaml:"profile"`
+	Experience     []Experience   `yaml:"experience"`
+	Education      []Education    `yaml:"education"`
 	Certifications []Certification `yaml:"certifications"`
-	Skills       []Skill      `yaml:"skills"`
-	Languages    []Language   `yaml:"languages"`
-	Volunteering []Volunteer  `yaml:"volunteering"`
+	Skills         []Skill        `yaml:"skills"`
+	Publications   []Publication  `yaml:"publications"`
+	Languages      []Language     `yaml:"languages"`
+	Volunteering   []Volunteer    `yaml:"volunteering"`
 }
 
 type Profile struct {
@@ -41,6 +47,10 @@ type Experience struct {
 	Description string `yaml:"description"`
 }
 
+func (e Experience) DescriptionHTML() template.HTML {
+	return markdownishToHTML(e.Description)
+}
+
 type Education struct {
 	Institution string `yaml:"institution"`
 	Start       string `yaml:"start"`
@@ -49,13 +59,25 @@ type Education struct {
 }
 
 type Certification struct {
-	Name string `yaml:"name"`
-	Date string `yaml:"date"`
+	Name   string `yaml:"name"`
+	Issuer string `yaml:"issuer"`
+	Date   string `yaml:"date"`
 }
 
 type Skill struct {
 	Category string   `yaml:"category"`
 	Items    []string `yaml:"items"`
+}
+
+func (s Skill) ItemsJoined() string {
+	return strings.Join(s.Items, ", ")
+}
+
+type Publication struct {
+	Title     string `yaml:"title"`
+	Publisher string `yaml:"publisher"`
+	Date      string `yaml:"date"`
+	URL       string `yaml:"url"`
 }
 
 type Language struct {
@@ -64,22 +86,73 @@ type Language struct {
 }
 
 type Volunteer struct {
-	Role        string `yaml:"role"`
+	Role         string `yaml:"role"`
 	Organization string `yaml:"organization"`
-	Start       string `yaml:"start"`
-	End         string `yaml:"end"`
-	Description string `yaml:"description"`
+	Start        string `yaml:"start"`
+	End          string `yaml:"end"`
+	Description  string `yaml:"description"`
+}
+
+func markdownishToHTML(s string) template.HTML {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return ""
+	}
+
+	var out strings.Builder
+	lines := strings.Split(s, "\n")
+	inList := false
+
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" {
+			if inList {
+				out.WriteString("</ul>")
+				inList = false
+			}
+			continue
+		}
+
+		isBullet := strings.HasPrefix(trimmed, "- ") || strings.HasPrefix(trimmed, "* ")
+		if isBullet {
+			if !inList {
+				out.WriteString("<ul>")
+				inList = true
+			}
+			out.WriteString("<li>")
+			out.WriteString(strings.TrimPrefix(strings.TrimPrefix(trimmed, "- "), "* "))
+			out.WriteString("</li>")
+		} else {
+			if inList {
+				out.WriteString("</ul>")
+				inList = false
+			}
+			out.WriteString("<p>")
+			out.WriteString(trimmed)
+			out.WriteString("</p>")
+		}
+	}
+
+	if inList {
+		out.WriteString("</ul>")
+	}
+
+	return template.HTML(out.String())
 }
 
 func main() {
-	dataFile := "data.yaml"
-	templateFile := "templates/cv.html"
-	outputDir := "output"
+	templateName := flag.String("template", "ats-clean", "template name (directory under templates/)")
+	dataFile := flag.String("data", "data.yaml", "path to YAML data file")
+	outputDir := flag.String("output", "output", "output directory")
+	flag.Parse()
 
-	// Parse YAML
-	raw, err := os.ReadFile(dataFile)
+	if env := os.Getenv("TEMPLATE"); env != "" && *templateName == "ats-clean" {
+		*templateName = env
+	}
+
+	raw, err := os.ReadFile(*dataFile)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading %s: %v\n", dataFile, err)
+		fmt.Fprintf(os.Stderr, "Error reading %s: %v\n", *dataFile, err)
 		os.Exit(1)
 	}
 
@@ -89,38 +162,50 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Read template
-	tplBytes, err := os.ReadFile(templateFile)
+	tplPath := fmt.Sprintf("templates/%s/template.html", *templateName)
+	tplBytes, err := templatesFS.ReadFile(tplPath)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading template: %v\n", err)
+		available := listTemplates()
+		fmt.Fprintf(os.Stderr, "Error: template %q not found.\nAvailable templates: %s\n", *templateName, strings.Join(available, ", "))
 		os.Exit(1)
 	}
 
-	// Parse and execute template
 	tpl, err := template.New("cv").Parse(string(tplBytes))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error parsing template: %v\n", err)
 		os.Exit(1)
 	}
 
-	// Create output directory
-	if err := os.MkdirAll(outputDir, 0755); err != nil {
+	if err := os.MkdirAll(*outputDir, 0755); err != nil {
 		fmt.Fprintf(os.Stderr, "Error creating output dir: %v\n", err)
 		os.Exit(1)
 	}
 
-	// Write HTML
 	var buf bytes.Buffer
 	if err := tpl.Execute(&buf, data); err != nil {
-		fmt.Fprintf(os.Stderr, "Error rendering template: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error rendering: %v\n", err)
 		os.Exit(1)
 	}
 
-	outPath := filepath.Join(outputDir, "cv.html")
+	outPath := filepath.Join(*outputDir, "cv.html")
 	if err := os.WriteFile(outPath, buf.Bytes(), 0644); err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing output: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Printf("✓ Rendered to %s\n", outPath)
+	fmt.Printf("Rendered %s template to %s\n", *templateName, outPath)
+}
+
+func listTemplates() []string {
+	entries, err := templatesFS.ReadDir("templates")
+	if err != nil {
+		return nil
+	}
+	var names []string
+	for _, e := range entries {
+		if e.IsDir() {
+			names = append(names, e.Name())
+		}
+	}
+	return names
 }

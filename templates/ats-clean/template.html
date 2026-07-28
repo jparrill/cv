@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ .Profile.Name }} — CV</title>
+  <style>
+    :root {
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --color-text: #111827;
+      --color-muted: #6b7280;
+      --color-accent: #1d4ed8;
+      --color-border: #d1d5db;
+      --color-bg: #ffffff;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-main);
+      color: var(--color-text);
+      background: var(--color-bg);
+      line-height: 1.55;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem;
+      font-size: 14px;
+    }
+
+    a { color: var(--color-accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* --- Header --- */
+    header {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--color-text);
+    }
+
+    header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .headline {
+      font-size: 1rem;
+      color: var(--color-muted);
+      margin-top: 0.15rem;
+    }
+
+    .contact-row {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--color-muted);
+    }
+
+    .contact-row span + span::before {
+      content: "  |  ";
+      color: var(--color-border);
+    }
+
+    /* --- Sections --- */
+    section {
+      margin-bottom: 1.5rem;
+    }
+
+    section > h2 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-accent);
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 0.3rem;
+      margin-bottom: 0.75rem;
+    }
+
+    /* --- About --- */
+    .about p {
+      font-size: 0.9rem;
+      color: var(--color-muted);
+      line-height: 1.6;
+    }
+
+    /* --- Experience --- */
+    .entry { margin-bottom: 1.25rem; }
+
+    .entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+
+    .entry-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .entry-company {
+      color: var(--color-accent);
+      font-weight: 500;
+    }
+
+    .entry-dates {
+      font-size: 0.8rem;
+      color: var(--color-muted);
+      white-space: nowrap;
+    }
+
+    .entry-location {
+      font-size: 0.8rem;
+      color: var(--color-muted);
+    }
+
+    .entry-desc {
+      margin-top: 0.3rem;
+      font-size: 0.875rem;
+      line-height: 1.55;
+    }
+
+    .entry-desc ul {
+      margin-top: 0.2rem;
+      padding-left: 1.2rem;
+    }
+
+    .entry-desc li {
+      margin-bottom: 0.15rem;
+    }
+
+    /* --- Skills --- */
+    .skills-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .skill-group {
+      flex: 1 1 200px;
+    }
+
+    .skill-group-name {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--color-muted);
+      margin-bottom: 0.15rem;
+    }
+
+    .skill-group-items {
+      font-size: 0.85rem;
+    }
+
+    /* --- Certs --- */
+    .cert-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .cert-list li {
+      font-size: 0.85rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .cert-issuer {
+      color: var(--color-muted);
+      font-size: 0.8rem;
+    }
+
+    /* --- Education --- */
+    .edu-entry { margin-bottom: 0.5rem; }
+    .edu-degree { font-size: 0.85rem; color: var(--color-muted); }
+
+    /* --- Publications --- */
+    .pub-entry { margin-bottom: 0.4rem; font-size: 0.85rem; }
+
+    /* --- Languages --- */
+    .lang-entry { font-size: 0.85rem; margin-bottom: 0.15rem; }
+    .lang-level { color: var(--color-muted); }
+
+    /* --- Volunteering --- */
+    .vol-entry { font-size: 0.85rem; margin-bottom: 0.3rem; }
+    .vol-org { color: var(--color-muted); }
+
+    /* --- Print --- */
+    @media print {
+      body { padding: 0; max-width: none; font-size: 12px; }
+      a { color: var(--color-text); }
+      header { border-bottom-color: #000; }
+      section > h2 { color: #000; }
+    }
+  </style>
+
+  <!-- Schema.org JSON-LD for ATS/AI readability -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "{{ .Profile.Name }}",
+    "jobTitle": "{{ .Profile.Headline }}",
+    "url": "{{ .Profile.Github }}",
+    "email": "{{ .Profile.Email }}",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "{{ .Profile.Location }}"
+    },
+    "sameAs": [
+      "{{ .Profile.Github }}",
+      "{{ .Profile.Linkedin }}"
+    ]{{ if .Skills }},
+    "knowsAbout": [{{ range $i, $cat := .Skills }}{{ range $j, $skill := .Items }}{{ if or $i $j }}, {{ end }}"{{ $skill }}"{{ end }}{{ end }}]{{ end }}{{ if .Certifications }},
+    "hasCredential": [{{ range $i, $cert := .Certifications }}{{ if $i }}, {{ end }}{
+      "@type": "EducationalOccupationalCredential",
+      "name": "{{ $cert.Name }}"{{ if $cert.Issuer }},
+      "recognizedBy": { "@type": "Organization", "name": "{{ $cert.Issuer }}" }{{ end }}
+    }{{ end }}]{{ end }}
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <h1>{{ .Profile.Name }}</h1>
+    <div class="headline">{{ .Profile.Headline }}</div>
+    <div class="contact-row">
+      {{ if .Profile.Location }}<span>{{ .Profile.Location }}</span>{{ end }}
+      {{ if .Profile.Email }}<span><a href="mailto:{{ .Profile.Email }}">{{ .Profile.Email }}</a></span>{{ end }}
+      {{ if .Profile.Github }}<span><a href="{{ .Profile.Github }}">GitHub</a></span>{{ end }}
+      {{ if .Profile.Linkedin }}<span><a href="{{ .Profile.Linkedin }}">LinkedIn</a></span>{{ end }}
+    </div>
+  </header>
+
+  {{ if .Profile.About }}
+  <section class="about">
+    <h2>Summary</h2>
+    <p>{{ .Profile.About }}</p>
+  </section>
+  {{ end }}
+
+  {{ if .Experience }}
+  <section>
+    <h2>Work Experience</h2>
+    {{ range .Experience }}
+    <div class="entry">
+      <div class="entry-header">
+        <div>
+          <span class="entry-title">{{ .Title }}</span>
+          {{ if .Company }}<span class="entry-company"> - {{ .Company }}</span>{{ end }}
+        </div>
+        <span class="entry-dates">{{ .Start }}{{ if .Current }} - Present{{ else if .End }} - {{ .End }}{{ end }}</span>
+      </div>
+      {{ if .Location }}<div class="entry-location">{{ .Location }}</div>{{ end }}
+      {{ if .Description }}<div class="entry-desc">{{ .DescriptionHTML }}</div>{{ end }}
+    </div>
+    {{ end }}
+  </section>
+  {{ end }}
+
+  {{ if .Skills }}
+  <section>
+    <h2>Skills</h2>
+    <div class="skills-grid">
+      {{ range .Skills }}
+      <div class="skill-group">
+        <div class="skill-group-name">{{ .Category }}</div>
+        <div class="skill-group-items">{{ .ItemsJoined }}</div>
+      </div>
+      {{ end }}
+    </div>
+  </section>
+  {{ end }}
+
+  {{ if .Certifications }}
+  <section>
+    <h2>Certifications</h2>
+    <ul class="cert-list">
+      {{ range .Certifications }}
+      <li>
+        <strong>{{ .Name }}</strong>
+        {{ if .Issuer }}<span class="cert-issuer"> - {{ .Issuer }}, {{ .Date }}</span>{{ end }}
+      </li>
+      {{ end }}
+    </ul>
+  </section>
+  {{ end }}
+
+  {{ if .Education }}
+  <section>
+    <h2>Education</h2>
+    {{ range .Education }}
+    <div class="edu-entry">
+      <div class="entry-header">
+        <span class="entry-title">{{ .Institution }}</span>
+        <span class="entry-dates">{{ .Start }}{{ if .End }} - {{ .End }}{{ end }}</span>
+      </div>
+      {{ if .Degree }}<div class="edu-degree">{{ .Degree }}</div>{{ end }}
+    </div>
+    {{ end }}
+  </section>
+  {{ end }}
+
+  {{ if .Publications }}
+  <section>
+    <h2>Publications</h2>
+    {{ range .Publications }}
+    <div class="pub-entry">
+      {{ if .URL }}<a href="{{ .URL }}">{{ .Title }}</a>{{ else }}<strong>{{ .Title }}</strong>{{ end }}
+      {{ if .Publisher }}<span class="cert-issuer"> - {{ .Publisher }}, {{ .Date }}</span>{{ end }}
+    </div>
+    {{ end }}
+  </section>
+  {{ end }}
+
+  {{ if .Languages }}
+  <section>
+    <h2>Languages</h2>
+    {{ range .Languages }}
+    <div class="lang-entry">{{ .Name }} <span class="lang-level">- {{ .Level }}</span></div>
+    {{ end }}
+  </section>
+  {{ end }}
+
+  {{ if .Volunteering }}
+  <section>
+    <h2>Volunteering</h2>
+    {{ range .Volunteering }}
+    <div class="vol-entry">
+      <strong>{{ .Role }}</strong> <span class="vol-org">- {{ .Organization }} ({{ .Start }} - {{ .End }})</span>
+      {{ if .Description }}<div style="color:var(--color-muted);">{{ .Description }}</div>{{ end }}
+    </div>
+    {{ end }}
+  </section>
+  {{ end }}
+</body>
+</html>

@@ -1,4 +1,4 @@
-module cv
+module github.com/jparrill/cv
 
 go 1.26.5
 

@@ -1,17 +1,19 @@
-.PHONY: build html pdf clean
+TEMPLATE ?= ats-clean
+OUTPUT   ?= output
+
+.PHONY: build html pdf clean list-templates
 
 build:
 	go build -o cv main.go
 
 html:
-	go run main.go
+	go run main.go --template $(TEMPLATE) --output $(OUTPUT)
 
 pdf: html
-	# Requires: weasyprint (pip install weasyprint) or wkhtmltopdf
-	# Option 1: WeasyPrint (recommended, better CSS support)
-	weasyprint output/cv.html output/cv.pdf
-	# Option 2: wkhtmltopdf (alternative)
-	# wkhtmltopdf output/cv.html output/cv.pdf
+	@echo "PDF generation not yet implemented (chromedp coming soon)"
 
 clean:
-	rm -rf output/
+	rm -rf $(OUTPUT)/
+
+list-templates:
+	@go run main.go --template _nonexistent_ 2>&1 | grep "Available" || true
