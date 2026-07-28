@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ .Profile.Name }} — CV</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --bg-deep: #1a1b26;
+      --bg-main: #24283b;
+      --bg-sidebar: #1f2335;
+      --bg-elevated: #292e42;
+      --border: #1d202f;
+      --border-highlight: #3d59a1;
+
+      --text: #c0caf5;
+      --text-secondary: #a9b1d6;
+      --text-muted: #787c99;
+      --text-comment: #565f89;
+      --text-gutter: #3b4261;
+
+      --blue: #7aa2f7;
+      --purple: #9d7cd8;
+      --magenta: #bb9af7;
+      --cyan: #7dcfff;
+      --teal: #0db9d7;
+      --green-cyan: #73daca;
+      --green: #9ece6a;
+      --red: #f7768e;
+      --orange: #ff9e64;
+      --yellow: #e0af68;
+
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-deep);
+      color: var(--text);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .layout {
+      display: flex;
+      max-width: 1000px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    /* --- Sidebar --- */
+    .sidebar {
+      width: 280px;
+      flex-shrink: 0;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      padding: 2.5rem 1.5rem;
+    }
+
+    .avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--bg-deep);
+      margin-bottom: 1.25rem;
+    }
+
+    .sidebar-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.15rem;
+    }
+
+    .sidebar-headline {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.4;
+    }
+
+    .sidebar-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .sidebar-title {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--magenta);
+      margin-bottom: 0.6rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .contact-item {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.35rem;
+    }
+
+    .contact-item a {
+      color: var(--cyan);
+      text-decoration: none;
+    }
+
+    .contact-item a:hover {
+      color: var(--blue);
+      text-decoration: underline;
+    }
+
+    /* Skill tags */
+    .skill-category {
+      margin-bottom: 0.75rem;
+    }
+
+    .skill-cat-name {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+    }
+
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+
+    .skill-tag {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.1rem 0.45rem;
+      color: var(--green-cyan);
+    }
+
+    .cert-item {
+      margin-bottom: 0.4rem;
+    }
+
+    .cert-name {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .cert-meta {
+      font-size: 0.7rem;
+      color: var(--text-comment);
+    }
+
+    .lang-item {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.2rem;
+    }
+
+    .lang-level {
+      color: var(--text-muted);
+    }
+
+    /* --- Main content --- */
+    .content {
+      flex: 1;
+      min-width: 0;
+      background: var(--bg-main);
+      padding: 2.5rem 2rem;
+    }
+
+    .content-section {
+      margin-bottom: 2rem;
+    }
+
+    .content-title {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--blue);
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* About */
+    .about-text {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    /* Experience */
+    .exp-item {
+      margin-bottom: 1.5rem;
+      padding-left: 1rem;
+      border-left: 2px solid var(--border);
+    }
+
+    .exp-item:hover {
+      border-left-color: var(--blue);
+    }
+
+    .exp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+
+    .exp-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .exp-company {
+      color: var(--orange);
+      font-weight: 500;
+    }
+
+    .exp-dates {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-comment);
+    }
+
+    .exp-location {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .exp-desc {
+      margin-top: 0.4rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .exp-desc p {
+      margin-bottom: 0.3rem;
+      color: var(--yellow);
+      font-weight: 500;
+      font-size: 0.82rem;
+    }
+
+    .exp-desc ul {
+      padding-left: 1.1rem;
+      margin-top: 0.15rem;
+    }
+
+    .exp-desc li {
+      margin-bottom: 0.15rem;
+      color: var(--text-secondary);
+    }
+
+    /* Education */
+    .edu-item {
+      margin-bottom: 0.6rem;
+    }
+
+    .edu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+
+    .edu-inst {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .edu-dates {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-comment);
+    }
+
+    .edu-degree {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* Publications */
+    .pub-item {
+      margin-bottom: 0.4rem;
+      font-size: 0.85rem;
+    }
+
+    .pub-item a {
+      color: var(--cyan);
+      text-decoration: none;
+    }
+
+    .pub-item a:hover { text-decoration: underline; }
+
+    .pub-meta {
+      font-size: 0.75rem;
+      color: var(--text-comment);
+    }
+
+    /* --- Print --- */
+    @media print {
+      body { background: #fff; color: #111; font-size: 11px; }
+      .layout { flex-direction: column; max-width: none; }
+      .sidebar {
+        width: 100%;
+        background: #f8f9fa;
+        border-right: none;
+        border-bottom: 2px solid #111;
+        padding: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .avatar { display: none; }
+      .sidebar-name { font-size: 1.2rem; }
+      .sidebar-section { margin-bottom: 0.5rem; flex: 1 1 200px; }
+      .content { padding: 1rem; }
+      .exp-item { border-left-color: #ccc; }
+      .exp-item:hover { border-left-color: #ccc; }
+      .content-title { color: #333; }
+      .sidebar-title { color: #666; }
+      .skill-tag { background: #eee; border-color: #ddd; color: #333; }
+      .exp-company { color: #c65d07; }
+      .exp-desc p { color: #555; }
+      a { color: #333; }
+    }
+
+    /* --- Responsive --- */
+    @media (max-width: 700px) {
+      .layout { flex-direction: column; }
+      .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "{{ .Profile.Name }}",
+    "jobTitle": "{{ .Profile.Headline }}",
+    "url": "{{ .Profile.Github }}",
+    "email": "{{ .Profile.Email }}",
+    "sameAs": ["{{ .Profile.Github }}", "{{ .Profile.Linkedin }}"]
+  }
+  </script>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="avatar">JM</div>
+      <div class="sidebar-name">{{ .Profile.Name }}</div>
+      <div class="sidebar-headline">{{ .Profile.Headline }}</div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">Contact</div>
+        {{ if .Profile.Location }}<div class="contact-item">{{ .Profile.Location }}</div>{{ end }}
+        {{ if .Profile.Email }}<div class="contact-item"><a href="mailto:{{ .Profile.Email }}">{{ .Profile.Email }}</a></div>{{ end }}
+        {{ if .Profile.Github }}<div class="contact-item"><a href="{{ .Profile.Github }}">GitHub</a></div>{{ end }}
+        {{ if .Profile.Linkedin }}<div class="contact-item"><a href="{{ .Profile.Linkedin }}">LinkedIn</a></div>{{ end }}
+      </div>
+
+      {{ if .Skills }}
+      <div class="sidebar-section">
+        <div class="sidebar-title">Skills</div>
+        {{ range .Skills }}
+        <div class="skill-category">
+          <div class="skill-cat-name">{{ .Category }}</div>
+          <div class="skill-tags">
+            {{ range .Items }}<span class="skill-tag">{{ . }}</span>{{ end }}
+          </div>
+        </div>
+        {{ end }}
+      </div>
+      {{ end }}
+
+      {{ if .Certifications }}
+      <div class="sidebar-section">
+        <div class="sidebar-title">Certifications</div>
+        {{ range .Certifications }}
+        <div class="cert-item">
+          <div class="cert-name">{{ .Name }}</div>
+          {{ if .Issuer }}<div class="cert-meta">{{ .Issuer }} — {{ .Date }}</div>{{ end }}
+        </div>
+        {{ end }}
+      </div>
+      {{ end }}
+
+      {{ if .Languages }}
+      <div class="sidebar-section">
+        <div class="sidebar-title">Languages</div>
+        {{ range .Languages }}
+        <div class="lang-item">{{ .Name }} <span class="lang-level">— {{ .Level }}</span></div>
+        {{ end }}
+      </div>
+      {{ end }}
+    </aside>
+
+    <main class="content">
+      {{ if .Profile.About }}
+      <section class="content-section">
+        <h2 class="content-title">// summary</h2>
+        <div class="about-text">{{ .Profile.About }}</div>
+      </section>
+      {{ end }}
+
+      {{ if .Experience }}
+      <section class="content-section">
+        <h2 class="content-title">// experience</h2>
+        {{ range .Experience }}
+        <div class="exp-item">
+          <div class="exp-header">
+            <div>
+              <span class="exp-title">{{ .Title }}</span>
+              {{ if .Company }}<span class="exp-company"> @ {{ .Company }}</span>{{ end }}
+            </div>
+            <span class="exp-dates">{{ .Start }}{{ if .Current }} — present{{ else if .End }} — {{ .End }}{{ end }}</span>
+          </div>
+          {{ if .Location }}<div class="exp-location">{{ .Location }}</div>{{ end }}
+          {{ if .Description }}<div class="exp-desc">{{ .DescriptionHTML }}</div>{{ end }}
+        </div>
+        {{ end }}
+      </section>
+      {{ end }}
+
+      {{ if .Education }}
+      <section class="content-section">
+        <h2 class="content-title">// education</h2>
+        {{ range .Education }}
+        <div class="edu-item">
+          <div class="edu-header">
+            <span class="edu-inst">{{ .Institution }}</span>
+            <span class="edu-dates">{{ .Start }}{{ if .End }} — {{ .End }}{{ end }}</span>
+          </div>
+          {{ if .Degree }}<div class="edu-degree">{{ .Degree }}</div>{{ end }}
+        </div>
+        {{ end }}
+      </section>
+      {{ end }}
+
+      {{ if .Publications }}
+      <section class="content-section">
+        <h2 class="content-title">// publications</h2>
+        {{ range .Publications }}
+        <div class="pub-item">
+          {{ if .URL }}<a href="{{ .URL }}">{{ .Title }}</a>{{ else }}{{ .Title }}{{ end }}
+          {{ if .Publisher }}<span class="pub-meta"> — {{ .Publisher }}, {{ .Date }}</span>{{ end }}
+        </div>
+        {{ end }}
+      </section>
+      {{ end }}
+    </main>
+  </div>
+</body>
+</html>
