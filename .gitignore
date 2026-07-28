@@ -1,5 +1,7 @@
 # Outputs
 output/
+_site-preview/
+_site/
 
 # Go
 vendor/
