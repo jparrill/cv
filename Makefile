@@ -1,16 +1,18 @@
 TEMPLATE ?= tokyo-night
 OUTPUT   ?= output
 
-.PHONY: build html pdf clean list-templates
+.PHONY: build pdf push clean list-templates
 
 build:
-	go build -o cv main.go
-
-html:
 	go run main.go --template $(TEMPLATE) --output $(OUTPUT)
 
-pdf: html
+pdf: build
 	@echo "PDF generation not yet implemented (chromedp coming soon)"
+
+push: build
+	git add -A
+	git commit -s -m "Update CV"
+	git push origin main
 
 clean:
 	rm -rf $(OUTPUT)/
