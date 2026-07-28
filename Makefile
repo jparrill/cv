@@ -1,12 +1,9 @@
 TEMPLATE ?= tokyo-night
 OUTPUT   ?= output
 
-.PHONY: build pdf push clean list-templates
+.PHONY: build push clean list-templates
 
 build:
-	go run main.go --template $(TEMPLATE) --output $(OUTPUT)
-
-pdf:
 	go run main.go --template $(TEMPLATE) --output $(OUTPUT) --pdf
 
 push: build

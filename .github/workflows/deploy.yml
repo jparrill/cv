@@ -24,9 +24,9 @@ jobs:
         with:
           go-version-file: go.mod
 
-      - name: Build CV
+      - name: Build CV (HTML + PDF)
         run: |
-          go run main.go --template tokyo-night --output _site
+          go run main.go --template tokyo-night --output _site --pdf
           cp _site/cv.html _site/index.html
 
       - uses: actions/upload-pages-artifact@v3
