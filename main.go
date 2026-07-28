@@ -7,7 +7,6 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -204,9 +203,7 @@ func main() {
 	if *pdfFlag {
 		pdfPath := filepath.Join(*outputDir, "cv.pdf")
 		absHTML, _ := filepath.Abs(outPath)
-		fileURL := "file://" + url.PathEscape(absHTML)
-		// PathEscape encodes too aggressively for file paths; use raw path
-		fileURL = "file://" + absHTML
+		fileURL := "file://" + absHTML
 
 		if err := htmlToPDF(fileURL, pdfPath); err != nil {
 			fmt.Fprintf(os.Stderr, "Error generating PDF: %v\n", err)
@@ -217,7 +214,14 @@ func main() {
 }
 
 func htmlToPDF(fileURL, outPath string) error {
-	ctx, cancel := chromedp.NewContext(context.Background())
+	opts := chromedp.DefaultExecAllocatorOptions[:]
+	if os.Getenv("CI") != "" {
+		opts = append(opts, chromedp.NoSandbox)
+	}
+	allocCtx, allocCancel := chromedp.NewExecAllocator(context.Background(), opts...)
+	defer allocCancel()
+
+	ctx, cancel := chromedp.NewContext(allocCtx)
 	defer cancel()
 
 	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
