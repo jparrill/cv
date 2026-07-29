@@ -198,6 +198,16 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Write tokens.css alongside the HTML so @import "tokens.css" resolves.
+	tokensPath := fmt.Sprintf("templates/%s/tokens.css", *templateName)
+	if tokensCSS, err := templatesFS.ReadFile(tokensPath); err == nil {
+		cssOut := filepath.Join(*outputDir, "tokens.css")
+		if err := os.WriteFile(cssOut, tokensCSS, 0644); err != nil {
+			fmt.Fprintf(os.Stderr, "Error writing tokens.css: %v\n", err)
+			os.Exit(1)
+		}
+	}
+
 	fmt.Printf("Rendered %s template to %s\n", *templateName, outPath)
 
 	if *pdfFlag {
